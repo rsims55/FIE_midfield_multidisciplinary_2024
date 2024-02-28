@@ -57,7 +57,7 @@ citation:
   pdf-url: https://github.com/dfolio/quarto-ieee/template.pdf
 ---
 
-## Tim's Draft
+# Tim's Draft
 
 A major contribution of the computing sciences historically has been to enable other branches of science the knowledege and skills to further their own endeavors with the use of computation.
 
@@ -66,3 +66,31 @@ This has led to the creation of many multidisciplinary fields such as bioinforma
 The curriculum of these multidisciplinary programs often include courses from their respective "parent" fields. For example, bioinformatics curriculum can include courses from both computer science departments as well as biology departments. The number of courses that are specific to the "child" field need not be as large as the number of courses offered by the "parent" field(s). 
 
 The MIDFIELD project provides a robust and detailed data set of the courses that students have taken as they complete their degrees. This project uses the MIDFIELD data set to determine the courses likely 
+
+# Randi Draft
+
+## Problem statement
+Degree programs for computer science students are often rigid, giving students few choices in courses, course sequences, and time to graduation. Courses within these degree programs have historically been accessible only to computer science majors. In recent years [maybe], universities have begun to shift particular computing courses to intersect with those in other departments which rely on computational methods, such as biology (bioinformatics) and genetics (genomics). 
+
+## Importance of interdisciplinary
+Interdisciplinary degree programs such as these allow for a diversity of entrance pathways for students from non-traditional backgrounds. These differing entrance pathways can promote inclusivity, allowing students multiple routes to graduation not outlined in a rigid degree pathway. While the importance of interdisciplinary fields and programs are well-known, the extent to which courses overlap between degree programs has not been investigated. 
+
+## Theoretical Framework
+
+## Gap the work fills
+Our work seeks to better understand the flexibility of these courses and their utilization within and between different degree programs through the following research questions:
+
+## RQs and hypotheses
+RQ1: What are the most overlapping degree programs in the computing disciplines? 
+RQ2: What are the most frequent courses to migrate between within computing disciplines?
+
+## Methods
+This project uses data from [x] institutions retrieved from the MIDFIELD (Multi-Institutional Database for Investigating Engineering Longitudinal Development). Using techniques from Boolean algebra and descriptive statistics, we identified undergraduate degree programs with the highest and lowest percentages of overlap with computer science curriculums. We then used course data within the degree programs to determine the levels of course overlap between degree programs.
+
+## Results
+Our findings show [x] degree programs as having large (x) percentages of overlap with computer science programs. [go into courses that make up these programs and their overlap] 
+
+## Discussions
+
+## Impacts 
+Results from this project indicate specific degrees and courses which allow students easy entry points to an interdisciplinary degree pathway. 
