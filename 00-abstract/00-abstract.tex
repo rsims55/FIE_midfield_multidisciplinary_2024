@@ -117,29 +117,6 @@
 \makeatletter
 \def\fps@figure{htbp}
 \makeatother
-\newlength{\cslhangindent}
-\setlength{\cslhangindent}{1.5em}
-\newlength{\csllabelwidth}
-\setlength{\csllabelwidth}{3em}
-\newlength{\cslentryspacingunit} % times entry-spacing
-\setlength{\cslentryspacingunit}{\parskip}
-\newenvironment{CSLReferences}[2] % #1 hanging-ident, #2 entry spacing
- {% don't indent paragraphs
-  \setlength{\parindent}{0pt}
-  % turn on hanging indent if param 1 is 1
-  \ifodd #1
-  \let\oldpar\par
-  \def\par{\hangindent=\cslhangindent\oldpar}
-  \fi
-  % set entry spacing
-  \setlength{\parskip}{#2\cslentryspacingunit}
- }%
- {}
-\usepackage{calc}
-\newcommand{\CSLBlock}[1]{#1\hfill\break}
-\newcommand{\CSLLeftMargin}[1]{\parbox[t]{\csllabelwidth}{#1}}
-\newcommand{\CSLRightInline}[1]{\parbox[t]{\linewidth - \csllabelwidth}{#1}\break}
-\newcommand{\CSLIndent}[1]{\hspace{\cslhangindent}#1}
 
 \usepackage{physics}
 \usepackage[version=3]{mhchem}
@@ -184,13 +161,6 @@
 \@ifundefined{c@chapter}{\newfloat{codelisting}{h}{lop}}{\newfloat{codelisting}{h}{lop}[chapter]}
 \floatname{codelisting}{Listing}
 \newcommand*\listoflistings{\listof{codelisting}{List of Listings}}
-\usepackage{amsthm}
-\theoremstyle{plain}
-\newtheorem{theorem}{Theorem}[section]
-\theoremstyle{remark}
-\AtBeginDocument{\renewcommand*{\proofname}{Proof}}
-\newtheorem*{remark}{Remark}
-\newtheorem*{solution}{Solution}
 \makeatother
 \makeatletter
 \@ifpackageloaded{caption}{}{\usepackage{caption}}
@@ -208,16 +178,6 @@
 \makeatother
 \usepackage[skip=2pt,font=footnotesize]{caption}
 %\captionsetup{format=myformat}
-\makeatletter
-%\setlength{\cslhangindent}{0pt plus .5pt}
-\providecommand{\bibfont}{\footnotesize}
-\let\CSLReferences@rig=\CSLReferences
-\renewcommand{\CSLReferences}[2]{
-\bibfont\settowidth\csllabelwidth{[999]}
-\CSLReferences@rig{#1}{#2}
-\vskip 0.3\baselineskip plus 0.1\baselineskip minus 0.1\baselineskip%
-}
-\makeatother
 \ifLuaTeX
   \usepackage{selnolig}  % disable illegal ligatures
 \fi
@@ -225,8 +185,8 @@
 \IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
 \urlstyle{same} % disable monospaced font for URLs
 \hypersetup{
-  pdftitle={A Sample Article Using quarto-ieee for IEEE Journal and Transactions},
-  pdfauthor={David Folio; John Doe},
+  pdftitle={Detecting computing-enabled interdisciplinary domains using the MIDFIELD data set},
+  pdfauthor={Tim Ransom; Randi Sims; Stephanie Damas},
   pdfkeywords={IEEE, IEEEtran, journal, Quarto, Pandoc, template},
   colorlinks=true,
   linkcolor={blue},
@@ -252,25 +212,27 @@
 % paper title
 % can use linebreaks \\ within to get better formatting as desired
 % Do not put math or special symbols in the title.
-\title{A Sample Article Using \texttt{quarto-ieee} for IEEE Journal and
-Transactions}
+\title{Detecting computing-enabled interdisciplinary domains using the
+MIDFIELD data set}
 
 \author{
 \thanks{The \texttt{quarto-ieee} template is freely available under the
 MIT license on github: \url{https://github.com/dfolio/quarto-ieee}.}
-David Folio\orcidlink{0000-0001-9430-6091},~\IEEEmembership{Member,
-IEEE}
-and~John Doe%
-\thanks{David Folio is with Laboratoire Prisme, INSA Centre Val de
-Loire, Bourges, 18800 France%
-  Corresponding author: david.folio@insa-cvl.fr
-}
-\thanks{Unknown affiliation}
+Tim Ransom\orcidlink{0000-0003-0357-5427},~Randi
+Sims\orcidlink{0000-0003-0357-5427}
+and~Stephanie Damas\orcidlink{0000-0003-0357-5427}%
+\thanks{Tim Ransom is with Engineering and Science Education, Clemson
+University, Clemson, 29634 United States of America%
+ e-mail: tsranso@clemson.edu}
 %by-author.affiliations
-\thanks{John Doe is with Anonymous University%
-}
+\thanks{Randi Sims is with Engineering and Science Education, Clemson
+University, Clemson, 29634 United States of America%
+ e-mail: rsims@clemson.edu}
 %by-author.affiliations
-\thanks{Template created June 23, 2023; revised February 27, 2024.}
+\thanks{Stephanie Damas is with Engineering and Science
+Education, Clemson University, Clemson, 29634 United States of America%
+ e-mail: damas@clemson.edu}
+%by-author.affiliations
 }
 \begin{document}
 
@@ -309,476 +271,101 @@ IEEE, IEEEtran, journal, Quarto, Pandoc, template
 % creates the second title. It will be ignored for other modes.
 % \IEEEpeerreviewmaketitle
 
-\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[borderline west={3pt}{0pt}{shadecolor}, boxrule=0pt, frame hidden, enhanced, interior hidden, sharp corners, breakable]}{\end{tcolorbox}}\fi
-
-\hypertarget{sec-intro}{%
-\section{Introduction}\label{sec-intro}}
-
-\IEEEPARstart{T}{his} file is intended to serve as a ``sample article
-file'' for IEEE journal papers produced with (Pandoc/Quarto)-Markdown
-using \texttt{IEEEtran.cls} version 1.8b and later for the PDF output.
-It is based on \texttt{bare\_jrnl\_new\_sample4.tex} provided by IEEE
-Publication Technology, Staff and available from
-\url{https://template-selector.ieee.org/}. The most common elements are
-covered in the simplified and updated instructions in
-\texttt{New\_IEEEtran\_how-to.pdf}. For less common elements you can
-refer back to the original \texttt{IEEEtran\_HOWTO.pdf}. It is assumed
-that the reader has a basic working knowledge of {\LaTeX}
-\protect\hyperlink{ref-mittelbach2023latex}{{[}1{]}} and of
-(Pandoc/Quarto)-Markdown
-\protect\hyperlink{ref-MacFarlane_Pandoc}{{[}2{]}},
-\protect\hyperlink{ref-Allaire_Quarto_2022}{{[}3{]}} markup.
-
-\hypertarget{the-design-intent-and-limitations-of-this-templates}{%
-\section{The Design, Intent, and Limitations of this
-Templates}\label{the-design-intent-and-limitations-of-this-templates}}
-
-The \texttt{quarto-ieee} template is intended to \textbf{approximate the
-final look and page length of the articles/papers} either in PDF output
-or HTML output. \textbf{They are NOT intended to be the final produced
-work that is displayed in print or on IEEEXplore\textsuperscript{®}}.
-They will help to give the authors an approximation of the number of
-pages and layout that will be in the final version.
-
-\hypertarget{unsuported-feature-and-limitations}{%
-\subsection{Unsuported feature and
-limitations}\label{unsuported-feature-and-limitations}}
-
-Although most of the {\LaTeX} and \texttt{IEEEtran.cls} commands and
-environment are supported, there are some limitations when trying to
-export to a format other than PDF (e.g.~HTML output). For PDF output,
-the reader can use the {\LaTeX} command directly. However, this may
-break other output formats.\\
-It can be can reported the following limitations of the
-\texttt{quarto-ieee} template: - Several authors with same affiliation
-produce weird output. In such case, it is recommended to use
-\texttt{note} and \texttt{tex-author-no-affiliation:\ true}. - For
-\texttt{PDF} output - \texttt{quarto-ieee} use a hack to handle the
-\texttt{longtable} issue with 2-column {\LaTeX} documents\footnote{{[}``\emph{\href{https://github.com/jgm/pandoc/issues/1023\%3E}{longtable
-  not compatible with 2-column LaTeX documents}}'',}. But, in some
-cases, a page overflow may occur (see also Section~\ref{sec-tables}). -
-For \texttt{HTML} output - The default Quarto toc is used, so the table
-of contents (toc) display is not the same as on
-\href{https://ieeexplore.ieee.org/}{IEEEXplore®}. - Footnote are put at
-the end of document, while on
-\href{https://ieeexplore.ieee.org/}{IEEEXplore®} there are placed in the
-accordion. - Figures are not placed in the accordion. -
-\href{https://ieeexplore.ieee.org/}{IEEEXplore®} specifics
-(e.g.~citation metrics, etc.) - The \texttt{HTML} output is a Quarto
-citeable article \protect\hyperlink{ref-quarto-citation}{{[}4{]}}, so a
-citation appendix is automatically added to the article end.
-
-\hypertarget{contributing}{%
-\subsection{Contributing}\label{contributing}}
-
-If you want to improve the \texttt{quarto-ieee} template or need some
-specific features do not hesitate to submit Pull Request\footnote{Go to
-  the PR page: \url{https://github.com/dfolio/quarto-ieee/pulls}} (it is
-considered good practice to open an issue for discussion before working
-on a pull request for a new feature).
-
-\hypertarget{some-random-text}{%
-\section{Some random text}\label{some-random-text}}
-
-For some of the remainder of this sample we will use dummy text to fill
-out paragraphs rather than use live text that may violate a copyright.
-\IEEEpubidadjcol\\
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis cursus
-nisl eget tempor porta. Proin dapibus dictum quam a commodo. Mauris
-congue scelerisque eros a porta. Proin blandit nulla sapien, et pretium
-justo dictum non. Vivamus ultricies, elit eu posuere placerat, sapien
-est condimentum nisl, at tincidunt tortor dolor ac ligula. Suspendisse
-pulvinar libero quis eros finibus sodales. Vivamus mattis est eget
-imperdiet luctus. Morbi eget posuere metus. Nam egestas elit lectus, eu
-tincidunt odio viverra sed. Sed sit amet metus rutrum, ultricies elit
-in, finibus felis. Integer lobortis dui ante, eget placerat lorem
-laoreet eu.
-
-Nullam mi ligula, luctus a orci ut, tincidunt varius augue. Vestibulum
-ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia
-curae; Donec sed sem risus. Nam eleifend ultrices elit, vitae posuere
-tellus interdum et. Nam id nisl at elit malesuada malesuada. Suspendisse
-viverra ipsum libero, vel pharetra sem maximus sed. Nunc vel est
-fringilla, rutrum diam eu, egestas quam. Vivamus lobortis blandit velit,
-commodo finibus mauris. Quisque vel lacus ipsum. Pellentesque quis nulla
-ipsum.
-
-Aenean in hendrerit quam. Orci varius natoque penatibus et magnis dis
-parturient montes, nascetur ridiculus mus. Aliquam tincidunt vehicula
-dignissim. In quis aliquet lectus, ac vestibulum elit. Quisque a magna
-viverra quam viverra faucibus. Nulla ornare tortor at mollis viverra.
-Curabitur vel porta dui. Etiam ipsum elit, egestas eget lacus nec,
-laoreet iaculis lacus. In iaculis risus ac tincidunt viverra. Maecenas
-tempor iaculis odio quis aliquet.\\
-Maecenas ac posuere turpis. Fusce est dui, dapibus sed odio eget,
-eleifend facilisis felis. Nam gravida varius enim, ornare tincidunt urna
-ullamcorper ut. Donec sit amet eros ac lacus placerat rutrum ut non
-dolor. Nulla tincidunt nunc massa, sed euismod dui feugiat vitae.
-Integer tempus risus rutrum tellus interdum, eu aliquet sapien rutrum.
-Nunc feugiat varius lacus sed laoreet. Integer euismod tellus nisi, id
-scelerisque sem sagittis eu. Suspendisse at orci vel neque varius tempor
-nec vitae odio. Integer elementum elementum fermentum. Morbi in turpis
-cursus, lacinia arcu et, semper orci.
-
-\hypertarget{front-matter}{%
-\section{Front matter}\label{front-matter}}
-
-Most Quarto's authors and affiliations schemes
-\protect\hyperlink{ref-quarto-funding}{{[}5{]}} are supported in the
-YAML front matter to render authors as requested by IEEE journals in PDF
-and HTML outputs. When provided to an author, the \texttt{note} entry is
-rendered as a \texttt{\textbackslash{}thanks\{\}} in \texttt{PDF} output
-(ignored in \texttt{HTML} output). Additionally, the reader may add to
-an author a \texttt{photo:\ path/to/photograph.png} with a \texttt{bio}
-metadata entries to generate a \texttt{IEEEbiography}, while a sole
-\texttt{bio} generates a \texttt{IEEEbiographynophoto} (these features
-is used both in \texttt{PDF} and \texttt{HTML} outputs).\\
-The \texttt{funding} entry is also used in both PDF and HTML outputs
-\protect\hyperlink{ref-quarto-funding}{{[}5{]}}. At version v1.1.1, only
-the \texttt{funding.statement} is used. Similarly, \texttt{citation}
-entry is supported to make the HTML output a ``\emph{citeable
-article}''~\protect\hyperlink{ref-quarto-citation}{{[}4{]}}.
-
-\hypertarget{some-common-elements}{%
-\section{Some Common Elements}\label{some-common-elements}}
-
-\hypertarget{sections-and-subsections}{%
-\subsection{Sections and Subsections}\label{sections-and-subsections}}
-
-As stated in the \texttt{IEEEtran} template enumeration of section
-headings is desirable, but not required. When numbered, it should be
-consistent throughout the article, that is, all headings and all levels
-of section headings in the article should be enumerated. Primary
-headings are designated with Roman numerals, secondary with capital
-letters, tertiary with Arabic numbers; and quaternary with lowercase
-letters. References and Acknowledgment headings are unlike all other
-section headings in text. They are never enumerated. They are simply
-primary headings without labels, regardless of whether the other
-headings in the article are enumerated.
-
-The following Section~\ref{sec-Markdown} shows some basic usage and
-capabilities of \texttt{quarto-ieee}.
-
-\hypertarget{sec-Markdown}{%
-\subsection{Markdown basics}\label{sec-Markdown}}
-
-The reader can easily find many documentations on how to write using the
-(Pandoc/Quarto) Markdown syntax. The \texttt{quarto-ieee} template
-relies mainly on the Markdown markup supported by Quarto
-\protect\hyperlink{ref-quarto-markdown}{{[}6{]}}, which is build based
-on Pandoc \protect\hyperlink{ref-MacFarlane_Pandoc}{{[}2{]}},
-\protect\hyperlink{ref-Allaire_Quarto_2022}{{[}3{]}}. Below are some
-basic examples of usage of the Markdown markup (to save space, it is
-better to consult the original Quarto document \texttt{template.qmd}).
-
-\hypertarget{display-equations}{%
-\subsubsection{Display equations}\label{display-equations}}
-
-To write equations use \texttt{\$} delimiters for inline formula or
-\texttt{\$\$} for block one. To number the equations, it is recommended
-to use classic equation environments provided by {\LaTeX} and to use
-\texttt{\textbackslash{}eqref\{\}} (or \texttt{\textbackslash{}ref\{\}})
-for cross-referencing. For example: \begin{equation}\label{eq:1}
-{{\chi}_a}=\text{diag}\left(\frac{{\chi}}{1+n_a{\chi}},\frac{{\chi}}{1+n_b{\chi}},\frac{{\chi}}{1+n_b{\chi}}\right),
-\end{equation} \begin{align}
-a & = b + c \label{eq:2} \\
-c & = d + e \label{eq:3}
-\end{align}
-
-\begin{equation}\label{eq:4}
-\begin{cases}
-    1&=n_a+2n_b \\
-    n_a&=\dfrac{1-{\varepsilon}^2}{2{\varepsilon}^3}\left(\log\left(\dfrac{1+{\varepsilon}}{1-{\varepsilon}}\right)-2{\varepsilon}\right)
-\end{cases}
-\end{equation} The above equation is cross-referenced as \eqref{eq:1},
-\eqref{eq:2}, \eqref{eq:3} and \eqref{eq:4}.
-
-For now, avoid using the Quarto cross-references that use of
-\texttt{\$\$\ \$\$} with \texttt{\#eq-} label. It works properly only
-for PDF output, but there are some issues with HTML\footnote{See the
-  issue here \url{https://github.com/quarto-dev/quarto-cli/issues/2275}}
-output.
-
-\begin{remark}
-
-\texttt{quarto-ieee} template also supports the
-\href{https://ctan.org/pkg/mhchem}{\texttt{mhchem}} (for chemical
-equation) and \href{https://ctan.org/pkg/physics}{\texttt{physics}} (for
-flexible macros for typesetting equations) {\LaTeX} packages and
-\href{https://docs.mathjax.org/en/latest/input/tex/extensions/index.html}{Mathjax
-extensions}.
-
-\end{remark}
-
-\hypertarget{theorems-proofs-and-remarks}{%
-\subsubsection{Theorems, Proofs and
-Remarks}\label{theorems-proofs-and-remarks}}
-
-To include a reference-able theorem, create a div with a \texttt{\#thm-}
-label. A theorem name is specified via the first heading in the block.
-For example:
-
-\begin{theorem}[Line]\protect\hypertarget{thm-line}{}\label{thm-line}
-
-The equation of any straight line, called a linear equation, can be
-written as:
-
-\[
-y = mx + b
-\]
-
-\end{theorem}
-
-The theorem is cross-referenced as Theorem~\ref{thm-line}.
-
-There are a number of theorem variations supported by
-\href{https://quarto.org/docs/authoring/cross-references.html\#theorems-and-proofs}{Quarto},
-each with their own label prefix:
-
-\begin{itemize}
-\tightlist
-\item
-  \texttt{\#thm-} for Theorem;
-\item
-  \texttt{\#lem-} for Lemma;
-\item
-  \texttt{\#cor-} for Corollary
-\item
-  \texttt{\#prp-} for Proposition;
-\item
-  \texttt{\#cnj-} for Conjecture;
-\item
-  \texttt{\#def-} for Definition;
-\item
-  \texttt{\#exm-} for Example;
-\item
-  \texttt{\#exr-} for Exercise.
-\end{itemize}
-
-The \texttt{proof}, \texttt{remark} and \texttt{solution} environments
-generally receive similar typesetting as theorems. However they are not
-numbered (and therefore cannot be cross-referenced). To create these
-environments just use them as the class name of a div such as:
-
-\begin{solution}[The solution]
-
-An example of solution environment.
-
-\end{solution}
-
-\hypertarget{figures}{%
-\subsubsection{Figures}\label{figures}}
-
-An image with nonempty alt text will be rendered as a figure with a
-caption with Pandoc and Quarto. Quarto includes a different features to
-simplify the use of figures and subfigures. Here, it is recommended to
-use div block with \texttt{\#fig-} label to embed your Figures.
-
-\begin{figure}
-
-{\centering 
-
-\includegraphics[width=0.3\textwidth,height=\textheight]{fig1.png}
-
-}
-
-\caption{\label{fig-1}An example of figure.}
-
-\end{figure}
-
-\begin{figure}
-
-\begin{minipage}[t]{0.50\linewidth}
-
-{\centering 
-
-\raisebox{-\height}{
-
-\includegraphics{fig1.png}
-
-}
-
-}
-
-\subcaption{\label{fig-2a}}
-\end{minipage}%
-%
-\begin{minipage}[t]{0.50\linewidth}
-
-{\centering 
-
-\raisebox{-\height}{
-
-\includegraphics{fig1.png}
-
-}
-
-}
-
-\subcaption{\label{fig-2b}}
-\end{minipage}%
-
-\caption{\label{fig-2}An example with sub-figure.}
-
-\end{figure}
-
-The figures is cross-referenced as Fig.~\ref{fig-2} and even the
-sub-figures as Fig.~\ref{fig-2b}.
-
-\hypertarget{sec-tables}{%
-\subsubsection{Tables}\label{sec-tables}}
-
-Similarly, many kind of tables may be used with Pandoc and Quarto. The
-latter also includes different features to simplify the table output. To
-make tables cross-referenceable use a label with a \texttt{\#tbl-}
-prefix.\\
-However, it is recommended to avoid using the commonly used single
-Markdown table known as a `pipe table'. In fact, Pandoc Markdown uses
-the {\LaTeX} \texttt{longtable} package, which does not support the
-two-column mode, which is required for most \texttt{IEEEtran} journals.
-\texttt{quarto-ieee} uses a hack to temporarily switch to one-column
-mode. However, this hack may break the page layout. To overcome this
-issue, a basic way is to use code cells (as for Table~\ref{tbl-other}).
-Quarto is a multi-language and it uses \texttt{Knitr} to execute
-\texttt{R} code and can execute Python code blocks within Markdown.
-
-\begin{table}
-
-\caption{\label{tbl-panel}Main
-Caption}\begin{minipage}[t]{0.50\linewidth}
-\subcaption{\label{tbl-first}First Table}
-
-{\centering 
-
-\begin{tabular}[t]{lll}
-\toprule
-Col1 & Col2 & Col3\\
-\midrule
-A & B & C\\
-E & F & G\\
-A & G & G\\
-\bottomrule
-\end{tabular}
-
-}
-
-\end{minipage}%
-%
-\begin{minipage}[t]{0.50\linewidth}
-\subcaption{\label{tbl-second}Second Table}
-
-{\centering 
-
-\begin{tabular}[t]{lll}
-\toprule
-Col1 & Col2 & Col3\\
-\midrule
-A & B & C\\
-E & F & G\\
-A & G & G\\
-\bottomrule
-\end{tabular}
-
-}
-
-\end{minipage}%
-
-\end{table}
-
-The Tables are cross-referenced as Table~\ref{tbl-panel} for details,
-especially Table~\ref{tbl-second}. There is also Table~\ref{tbl-other}.
-
-\hypertarget{tbl-other}{}
-\begin{table}
-\caption{\label{tbl-other}A table }\tabularnewline
-
-\centering
-\begin{tabular}{lll}
-\toprule
-Col1 & Col2 & Col3\\
-\midrule
-A & D & G\\
-B & E & H\\
-C & F & I\\
-\bottomrule
-\end{tabular}
-\end{table}
-
-\hypertarget{bibliography}{%
-\subsection{Bibliography}\label{bibliography}}
-
-IEEE journal should normally use IEEEtran\footnote{IEEEtran BibTeX style
-  support page is:
-  \url{http://www.michaelshell.org/tex/ieeetran/bibtex/}}
-\textsc{Bib}{\TeX} style. Nevertheless, Pandoc and Quarto do support
-\textsc{Bib}{\TeX} with natbib or biblatex. However, neither is
-officially recommended for normal IEEE use. For this reason,
-\texttt{quarto-ieee} uses \texttt{citeproc} with the \texttt{ieee} CSL
-style sheet.
-
-\hypertarget{conclusions}{%
-\section{Conclusions}\label{conclusions}}
-
-The conclusion goes here.
-
-\hypertarget{acknowledgment}{%
-\section*{Acknowledgment}\label{acknowledgment}}
-\addcontentsline{toc}{section}{Acknowledgment}
-
-This should be a simple paragraph before the References to thank those
-individuals and institutions who have supported your work on this
-article.
-
-\appendix[An Appendix]{}
-
-Use \texttt{{[}{]}\{.appendix\ options="An\ Appendix"\}} markup if you
-have a single appendix. \texttt{IEEEtran} state that to do not use
-\texttt{\textbackslash{}section\{\}} anymore after
-\texttt{\textbackslash{}appendix}.
-
-\hypertarget{references}{%
-\section*{References}\label{references}}
-\addcontentsline{toc}{section}{References}
-
-\hypertarget{refs}{}
-\begin{CSLReferences}{0}{0}
-\leavevmode\vadjust pre{\hypertarget{ref-mittelbach2023latex}{}}%
-\CSLLeftMargin{{[}1{]} }%
-\CSLRightInline{F. Mittelbach and U. Fischer, \emph{The {LaTeX}
-companion}, 3rd ed. {Addison Wesley Professional}, 2023. }
-
-\leavevmode\vadjust pre{\hypertarget{ref-MacFarlane_Pandoc}{}}%
-\CSLLeftMargin{{[}2{]} }%
-\CSLRightInline{J. MacFarlane, A. Krewinkel, and J. Rosenthal,
-{``{Pandoc}.''} {[}Online{]}. Available:
-\url{https://github.com/jgm/pandoc}}
-
-\leavevmode\vadjust pre{\hypertarget{ref-Allaire_Quarto_2022}{}}%
-\CSLLeftMargin{{[}3{]} }%
-\CSLRightInline{J. J. Allaire, C. Teague, C. Scheidegger, Y. Xie, and C.
-Dervieux, {``{Quarto}.''} Jan-2022 {[}Online{]}. Available:
-\url{https://github.com/quarto-dev/quarto-cli}}
-
-\leavevmode\vadjust pre{\hypertarget{ref-quarto-citation}{}}%
-\CSLLeftMargin{{[}4{]} }%
-\CSLRightInline{{``Quarto - {Creating Citeable Articles}.''}
-{[}Online{]}. Available:
-\url{https://quarto.org/docs/authoring/create-citeable-articles.html}.
-{[}Accessed: 25-Oct-2023{]}}
-
-\leavevmode\vadjust pre{\hypertarget{ref-quarto-funding}{}}%
-\CSLLeftMargin{{[}5{]} }%
-\CSLRightInline{{``Quarto - {Front Matter}.''} {[}Online{]}. Available:
-\url{https://quarto.org/docs/authoring/front-matter.html\#funding}.
-{[}Accessed: 25-Oct-2023{]}}
-
-\leavevmode\vadjust pre{\hypertarget{ref-quarto-markdown}{}}%
-\CSLLeftMargin{{[}6{]} }%
-\CSLRightInline{{``Quarto - {Markdown Basics}.''} {[}Online{]}.
-Available: \url{https://quarto.org/docs/authoring/markdown-basics}.
-{[}Accessed: 25-Oct-2023{]}}
-
-\end{CSLReferences}
+\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[enhanced, sharp corners, frame hidden, borderline west={3pt}{0pt}{shadecolor}, boxrule=0pt, breakable, interior hidden]}{\end{tcolorbox}}\fi
+
+\hypertarget{tims-draft}{%
+\section{Tim's Draft}\label{tims-draft}}
+
+A major contribution of the computing sciences historically has been to
+enable other branches of science the knowledege and skills to further
+their own endeavors with the use of computation.
+
+This has led to the creation of many multidisciplinary fields such as
+bioinformatics, computational chemistry, and computational physics.
+These specialized fields offer both a targeted approach towards
+furthering our collective knowledge as well as acting as a point of
+attraction for steudents to enroll is one university over another.
+
+The curriculum of these multidisciplinary programs often include courses
+from their respective ``parent'' fields. For example, bioinformatics
+curriculum can include courses from both computer science departments as
+well as biology departments. The number of courses that are specific to
+the ``child'' field need not be as large as the number of courses
+offered by the ``parent'' field(s).
+
+The MIDFIELD project provides a robust and detailed data set of the
+courses that students have taken as they complete their degrees. This
+project uses the MIDFIELD data set to determine the courses likely
+
+\hypertarget{randi-draft}{%
+\section{Randi Draft}\label{randi-draft}}
+
+\hypertarget{problem-statement}{%
+\subsection{Problem statement}\label{problem-statement}}
+
+Degree programs for computer science students are often rigid, giving
+students few choices in courses, course sequences, and time to
+graduation. Courses within these degree programs have historically been
+accessible only to computer science majors. In recent years {[}maybe{]},
+universities have begun to shift particular computing courses to
+intersect with those in other departments which rely on computational
+methods, such as biology (bioinformatics) and genetics (genomics).
+
+\hypertarget{importance-of-interdisciplinary}{%
+\subsection{Importance of
+interdisciplinary}\label{importance-of-interdisciplinary}}
+
+Interdisciplinary degree programs such as these allow for a diversity of
+entrance pathways for students from non-traditional backgrounds. These
+differing entrance pathways can promote inclusivity, allowing students
+multiple routes to graduation not outlined in a rigid degree pathway.
+While the importance of interdisciplinary fields and programs are
+well-known, the extent to which courses overlap between degree programs
+has not been investigated.
+
+\hypertarget{theoretical-framework}{%
+\subsection{Theoretical Framework}\label{theoretical-framework}}
+
+\hypertarget{gap-the-work-fills}{%
+\subsection{Gap the work fills}\label{gap-the-work-fills}}
+
+Our work seeks to better understand the flexibility of these courses and
+their utilization within and between different degree programs through
+the following research questions:
+
+\hypertarget{rqs-and-hypotheses}{%
+\subsection{RQs and hypotheses}\label{rqs-and-hypotheses}}
+
+RQ1: What are the most overlapping degree programs in the computing
+disciplines? RQ2: What are the most frequent courses to migrate between
+within computing disciplines?
+
+\hypertarget{methods}{%
+\subsection{Methods}\label{methods}}
+
+This project uses data from {[}x{]} institutions retrieved from the
+MIDFIELD (Multi-Institutional Database for Investigating Engineering
+Longitudinal Development). Using techniques from Boolean algebra and
+descriptive statistics, we identified undergraduate degree programs with
+the highest and lowest percentages of overlap with computer science
+curriculums. We then used course data within the degree programs to
+determine the levels of course overlap between degree programs.
+
+\hypertarget{results}{%
+\subsection{Results}\label{results}}
+
+Our findings show {[}x{]} degree programs as having large (x)
+percentages of overlap with computer science programs. {[}go into
+courses that make up these programs and their overlap{]}
+
+\hypertarget{discussions}{%
+\subsection{Discussions}\label{discussions}}
+
+\hypertarget{impacts}{%
+\subsection{Impacts}\label{impacts}}
+
+Results from this project indicate specific degrees and courses which
+allow students easy entry points to an interdisciplinary degree pathway.
 
 
 % Can use something like this to put references on a page
@@ -799,14 +386,22 @@ Available: \url{https://quarto.org/docs/authoring/markdown-basics}.
 %\renewcommand{\bibfont}{\footnotesize} % for IEEE bibfont size
 
 \pagebreak[3]
-\begin{IEEEbiography}[\includegraphics{david-folio.png}]{David Folio}
-Use \texttt{IEEEbiography} with figure as option and the author name as
-the argument followed by the biography text.
+\begin{IEEEbiography}[\includegraphics{david-folio.png}]{Tim Ransom}
+Tim Ransom is a PhD candidate in the Clemson University Enigineering and
+Science Education department. He studies computer science education
+through qualitative and computational methodologies.
 \end{IEEEbiography}
-\begin{IEEEbiographynophoto}{John Doe}
-Use \texttt{IEEEbiographynophoto} and the author name as the argument
-followed by the biography text.
-\end{IEEEbiographynophoto}
+\begin{IEEEbiography}[\includegraphics{david-folio.png}]{Randi Sims}
+Tim Ransom is a PhD candidate in the Clemson University Enigineering and
+Science Education department. He studies computer science education
+through qualitative and computational methodologies.
+\end{IEEEbiography}
+\begin{IEEEbiography}[\includegraphics{david-folio.png}]{Stephanie
+Damas}
+Tim Ransom is a PhD candidate in the Clemson University Enigineering and
+Science Education department. He studies computer science education
+through qualitative and computational methodologies.
+\end{IEEEbiography}
 % that's all folks
 \end{document}
 
