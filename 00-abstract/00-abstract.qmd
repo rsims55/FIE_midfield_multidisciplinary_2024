@@ -1,36 +1,70 @@
 ---
-title: A Sample Article Using `quarto-ieee` for IEEE Journal and Transactions
+title: Detecting computing-enabled interdisciplinary domains using the MIDFIELD data set
 format:
   ieee-pdf:
     keep-tex: true  
   ieee-html: default
 author:
-  - id: dfolio
-    name: David Folio
+  - id: tsranso
+    name: Tim Ransom
     affiliations:
-      - name: INSA Centre Val de Loire
-        department: Laboratoire Prisme
-        city: Bourges
-        country: France
-        postal-code: 18800
-      - name: Unknown affiliation
-    orcid: 0000-0001-9430-6091
-    email: david.folio@insa-cvl.fr
-    url: https://dfolio.fr/
-    membership: "Member, IEEE"
-    attributes:
-      corresponding: true
+      - name: Clemson University 
+        department: Engineering and Science Education
+        city: Clemson
+        country: United States of America
+        postal-code: 29634
+      # - name: Unknown affiliation
+    orcid: 0000-0003-0357-5427
+    email: tsranso@clemson.edu
+    url: https://tsranso.people.clemson.edu
+    # membership: "Member, IEEE"
+    # attributes:
+    #   corresponding: true
     photo: david-folio.png
     bio: |
-      Use `IEEEbiography`  with figure as  option and
-      the author name as the argument followed by the biography text.
-  - name: John Doe
-    affiliations: 
-      - name: Anonymous University
+      Tim Ransom is a PhD candidate in the Clemson University Enigineering 
+      and Science Education department. He studies computer science education
+      through qualitative and computational methodologies.
+  - id: rsims
+    name: Randi Sims
+    affiliations:
+      - name: Clemson University 
+        department: Engineering and Science Education
+        city: Clemson
+        country: United States of America
+        postal-code: 29634
+      # - name: Unknown affiliation
+    orcid: 0000-0003-0357-5427
+    email: rsims@clemson.edu
+    url: 
+    # membership: "Member, IEEE"
+    # attributes:
+    #   corresponding: true
+    photo: david-folio.png
     bio: |
-      Use `IEEEbiographynophoto` and the author name
-      as the argument followed by the biography text.
-    note: "Template created June 23, 2023; revised `r format(Sys.Date(),format='%B %d, %Y')`."
+      Tim Ransom is a PhD candidate in the Clemson University Enigineering 
+      and Science Education department. He studies computer science education
+      through qualitative and computational methodologies.
+  - id: damas
+    name: Stephanie Damas
+    affiliations:
+      - name: Clemson University 
+        department: Engineering and Science Education
+        city: Clemson
+        country: United States of America
+        postal-code: 29634
+      # - name: Unknown affiliation
+    orcid: 0000-0003-0357-5427
+    email: damas@clemson.edu
+    url: 
+    # membership: "Member, IEEE"
+    # attributes:
+    #   corresponding: true
+    photo: david-folio.png
+    bio: |
+      Tim Ransom is a PhD candidate in the Clemson University Enigineering 
+      and Science Education department. He studies computer science education
+      through qualitative and computational methodologies.
 abstract: |
   This document describes the most common article elements and how to use the 
   `quarto-ieee` class with Pandoc/Quarto-Markdown to produce files that are
