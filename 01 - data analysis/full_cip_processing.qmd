@@ -21,34 +21,37 @@ term <- read.csv("data/term_2020_03_16_fix9a.csv")
 # data(course, degree, term, package = "midfielddata")
 ```
 
-# Computing CIP Codes
+# Gather Full CIP Codes
 
 ```{r cips}
-# Import cip codes 
-cip <- read.csv("data/cip_codes.csv") %>%
-  clean_names() %>%
-  rename(series = cip_code_two_digit_series, 
-         cip6 = x2020_cip_code,
-         title = cip_code_title) %>%
-  # Narrow to only cip codes with comput in the name
-  filter(grepl('Comput', title)) %>%
-  # Standardize cip codes to four decimal places 
-  mutate(cip6 = round(cip6, 4)) %>%
-  # Remove decimal place
-  mutate(cip6 = str_remove(cip6, '\\.')) 
+## Make a new cip code list with all of the midfield cip codes (using distinct)
+cip <- degree %>%
+  distinct(degree, cip6, .keep_all = TRUE) %>%
+  rename(title = degree)
 ```
 
 # Degree Conferrment by Cip
 
 ```{r combine datasets}
+# Combining datasets
 degree_cip <- cip %>%
   left_join(degree, by = "cip6") %>%
   group_by(title) %>% 
-  summarise(degrees_conferred = n())
+  summarise(degrees_conferred = n()) %>%
+  # Sorting by highest numbers of degrees conferred
+  arrange(desc(degrees_conferred))
+
+# Gather distinct number of degree conferrments
+top_cips <- distinct(degree_cip, degrees_conferred, .keep_all = TRUE)
+
+# Keep the top 75% of degree conferrments - CHANGE TO SHOW CIPS
+top_cips <- top_cips[top_cips$degrees_conferred > 
+                         quantile(top_cips$degrees_conferred,
+                                  prob=1-75/100),]
 ```
 
-```{r table 1 - degrees and cips, fig.cap="Table 1. Number of degrees conferred per CIP code and computing major"}
-print(degree_cip)
+```{r table 1 - degrees and cips, fig.cap="Table 1. Top 75% of degrees conferred per CIP code"}
+print(top_cip)
 ```
 
 ```{r fig 1 - bar chart, fig.cap="Figure 1. Bar chart with degrees conferred by CIP code, all other computer science CIP codes have 1 degree or less"}
@@ -68,23 +71,15 @@ degree_cip %>%
         axis.ticks.x = element_blank())
 ```
 
-
 # Classes Taken
 
-1. Pull all student id's who finished a cs degree  (make a function to insert the cip code of interest - computer science)
-2. Match those with student courses taken (name/abbrev/etc) - connect with degree
-3. Group by courses 
-4. Create 1 function to elicit 1 graph
-
-Use Shiny (multiple types of visuals)
-
 ```{r combine datasets for courses}
-# Pull cs students by cip code
-comp_students <- cip %>%
+# Pull students by cip code
+students <- cip %>%
   left_join(degree, by = "cip6")
 
-# Pull courses completed by these cs students
-compstud_courses <- comp_students %>%
+# Pull courses completed by these students
+stud_courses <- students %>%
   left_join(course, by = c("mcid", "institution")) %>%
   # Create column for course + number
   unite("course_id", abbrev:number, sep = "-")
@@ -95,13 +90,13 @@ compstud_courses <- comp_students %>%
 ```{r functions}
 percent_classes <- function(cip1, cip2){
   # Pull classes from cip 1
-  cip_1 <- compstud_courses %>%
+  cip_1 <- stud_courses %>%
   group_by(cip6) %>%
   distinct(course_id) %>%
   filter(cip6 == cip1)
   
   # Pull classes from cip 2
-  cip_2 <- compstud_courses %>%
+  cip_2 <- stud_courses %>%
   group_by(cip6) %>%
   distinct(course_id) %>%
   filter(cip6 == cip2) 
@@ -123,6 +118,7 @@ percent_classes <- function(cip1, cip2){
   return(matching_distinct_courses/total_distinct_courses)
 }
 
+# Test
 percent_classes(110101, 110701)
 
 ```
