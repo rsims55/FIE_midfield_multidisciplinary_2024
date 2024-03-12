@@ -1,9 +1,24 @@
+---
+title: "ggplot2 demo"
+author: "Norah Jones"
+date: "5/22/2021"
+format: 
+  html:
+    code-fold: true
+---
+
 ```{r libraries, message = FALSE, include = FALSE}
 library(dplyr)
 library(tidyverse)
 library(tidyr)
 library(janitor)
 library(simplermarkdown)
+
+if (system.file(package = 'midfielddata') == "") {
+  install.packages("midfielddata",
+                 repos = "https://MIDFIELDR.github.io/drat/",
+                 type = "source")
+}
 library(midfielddata)
 ```
 
