@@ -1,0 +1,163 @@
+```{r libraries, message = FALSE, include = FALSE}
+library(dplyr)
+library(tidyverse)
+library(tidyr)
+library(janitor)
+library(simplermarkdown)
+library(midfielddata)
+```
+
+# Data Import and Cleaning
+
+```{r full data import, message = FALSE, warning = FALSE, eval=FALSE}
+# Midfield Data for full dataset
+degree <- read.csv("data/degree_2020_03_16_fix9a.csv")
+student <- read.csv("data/student_2020_03_16_fix9a.csv")
+course <- read.csv("data/course_2020_03_16_fix9a.csv")
+term <- read.csv("data/term_2020_03_16_fix9a.csv")
+```
+
+```{r partial data import, include = FALSE}
+# data(course, degree, term, package = "midfielddata")
+```
+
+# Gather Full CIP Codes
+
+```{r cips}
+## Make a new cip code list with all of the midfield cip codes (using distinct)
+cip <- degree %>%
+  distinct(degree, cip6, .keep_all = TRUE) %>%
+  rename(title = degree)
+```
+
+# Degree Conferrment by Cip
+
+```{r combine datasets}
+# Combining datasets
+degree_cip <- cip %>%
+  left_join(degree, by = "cip6") %>%
+  group_by(title) %>% 
+  summarise(degrees_conferred = n()) %>%
+  # Sorting by highest numbers of degrees conferred
+  arrange(desc(degrees_conferred))
+
+# Gather distinct number of degree conferrments
+top_cips <- distinct(degree_cip, degrees_conferred, .keep_all = TRUE)
+
+# Keep the top 75% of degree conferrments - CHANGE TO SHOW CIPS
+top_cips <- top_cips[top_cips$degrees_conferred > 
+                         quantile(top_cips$degrees_conferred,
+                                  prob=1-75/100),]
+```
+
+```{r table 1 - degrees and cips, fig.cap="Table 1. Top 75% of degrees conferred per CIP code"}
+print(top_cip)
+```
+
+```{r fig 1 - bar chart, fig.cap="Figure 1. Bar chart with degrees conferred by CIP code, all other computer science CIP codes have 1 degree or less"}
+# Gather degree information
+degree_cip %>%
+  # Filter for degrees over 1
+  filter(degrees_conferred > 1) %>%
+  # Reorder axis for descending order
+  ggplot(aes(x = reorder(x = title, -degrees_conferred), y = degrees_conferred)) +
+  geom_bar(stat = "identity", aes(fill = title)) +
+  labs(title = "Number of Degrees Conferred per CIP Code",
+       x = "Degree",
+       y = "Number Conferred (log)",
+       fill = "Degree Title") +
+  scale_y_continuous(trans='log10') +
+  theme(axis.text.x = element_blank(),
+        axis.ticks.x = element_blank())
+```
+
+# Classes Taken
+
+```{r combine datasets for courses}
+# Pull students by cip code
+students <- cip %>%
+  left_join(degree, by = "cip6")
+
+# Pull courses completed by these students
+stud_courses <- students %>%
+  left_join(course, by = c("mcid", "institution")) %>%
+  # Create column for course + number
+  unite("course_id", abbrev:number, sep = "-")
+```
+
+# Calculate course curricula overlap
+
+```{r functions}
+percent_classes <- function(cip1, cip2){
+  # Pull classes from cip 1
+  cip_1 <- stud_courses %>%
+  group_by(cip6) %>%
+  distinct(course_id) %>%
+  filter(cip6 == cip1)
+  
+  # Pull classes from cip 2
+  cip_2 <- stud_courses %>%
+  group_by(cip6) %>%
+  distinct(course_id) %>%
+  filter(cip6 == cip2) 
+  
+  # Join theses classes and compare between cips
+  joined_data <- cip_1 %>%
+  full_join(cip_2,
+            by = "course_id")
+  
+  # Calculate total courses between both majors
+  total_distinct_courses <- nrow(joined_data)
+  
+  # Calculate courses that match both majors
+  matching_distinct_courses <- joined_data %>%
+    drop_na() %>%
+    nrow()
+  
+  # Return the overlap decimal
+  return(matching_distinct_courses/total_distinct_courses)
+}
+
+# Test
+percent_classes(110101, 110701)
+
+```
+
+```{r computer cip lists with overlap}
+# Narrowing cip codes with over 1 degree conferred
+cip_list <- cip %>%
+  left_join(degree, by = "cip6") %>%
+  group_by(cip6) %>% 
+  summarise(degrees_conferred = n()) %>%
+  filter(degrees_conferred > 1) 
+
+# Making into list
+cip_list <- as.list(cip_list$cip6)
+
+# Run function
+## Computer and Information Sciences / Computer Science
+percent_classes(cip_list[[1]], cip_list[[2]])
+
+## Computer and Information Sciences / Computer Engineering 
+percent_classes(cip_list[[1]], cip_list[[3]])
+
+## Computer and Information Sciences / Computer Systems Technology
+percent_classes(cip_list[[1]], cip_list[[4]])
+
+## Computer Science / Computer Engineering
+percent_classes(cip_list[[2]], cip_list[[3]])
+
+## Computer Science / Computer Systems Technology
+percent_classes(cip_list[[2]], cip_list[[4]])
+
+## Computer Engineering / Computer Systems Technology
+percent_classes(cip_list[[3]], cip_list[[4]])
+```
+
+```{r}
+# Furrr package - map function for cip6 codes for all overlapping cips
+
+# Try to get heat map for overlap of courses 
+
+```
+
