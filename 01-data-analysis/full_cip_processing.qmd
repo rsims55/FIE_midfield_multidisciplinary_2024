@@ -1,3 +1,14 @@
+---
+title: "MIDFIELD interdisciplinary analysis"
+author: "Randi Sims, Tim Ransom"
+date: ""
+execute:
+  cache: true
+format: 
+  html:
+    code-fold: true
+---
+
 ```{r libraries, message = FALSE, include = FALSE}
 library(dplyr)
 library(tidyverse)
@@ -9,16 +20,25 @@ library(midfielddata)
 
 # Data Import and Cleaning
 
-```{r full data import, message = FALSE, warning = FALSE, eval=FALSE}
+```{r data import, message = FALSE, warning = FALSE, eval = TRUE}
 # Midfield Data for full dataset
-degree <- read.csv("data/degree_2020_03_16_fix9a.csv")
-student <- read.csv("data/student_2020_03_16_fix9a.csv")
-course <- read.csv("data/course_2020_03_16_fix9a.csv")
-term <- read.csv("data/term_2020_03_16_fix9a.csv")
-```
 
-```{r partial data import, include = FALSE}
-# data(course, degree, term, package = "midfielddata")
+use_full_dataset <- TRUE
+if (use_full_dataset && !exists("degree")) {
+  degree <- read.csv("data/degree_2020_03_16_fix9a.csv")
+  student <- read.csv("data/student_2020_03_16_fix9a.csv")
+  course <- read.csv("data/course_2020_03_16_fix9a.csv")
+  term <- read.csv("data/term_2020_03_16_fix9a.csv")
+} else if (!use_full_dataset) {
+  if (system.file(package = "midfielddata") == "") {
+    install.packages("midfielddata",
+                     repos = "https://MIDFIELDR.github.io/drat/",
+                     type = "source"
+    )
+  }
+  library(midfielddata)
+  data(course, degree, term, package = "midfielddata")
+}
 ```
 
 # Gather Full CIP Codes
@@ -41,10 +61,10 @@ degree_cip <- cip %>%
   # Sorting by highest numbers of degrees conferred
   arrange(desc(degrees_conferred))
 
-# Gather distinct number of degree conferrments
+# Gather distinct number of degree conferments
 top_cips <- distinct(degree_cip, degrees_conferred, .keep_all = TRUE)
 
-# Keep the top 75% of degree conferrments - CHANGE TO SHOW CIPS
+# Keep the top 75% of degree conferments - CHANGE TO SHOW CIPS
 top_cips <- top_cips[top_cips$degrees_conferred >
   quantile(top_cips$degrees_conferred,
     prob = 1 - 75 / 100
@@ -52,7 +72,7 @@ top_cips <- top_cips[top_cips$degrees_conferred >
 ```
 
 ```{r table 1 - degrees and cips, fig.cap="Table 1. Top 75% of degrees conferred per CIP code"}
-print(top_cip)
+print(top_cips)
 ```
 
 ```{r fig 1 - bar chart, fig.cap="Figure 1. Bar chart with degrees conferred by CIP code, all other computer science CIP codes have 1 degree or less"}

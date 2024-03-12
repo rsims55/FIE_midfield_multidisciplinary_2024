@@ -1,7 +1,9 @@
 ---
-title: "ggplot2 demo"
-author: "Norah Jones"
-date: "5/22/2021"
+title: "MIDFIELD interdisciplinary analysis"
+author: "Randi Sims, Tim Ransom"
+date: ""
+execute:
+  cache: true
 format: 
   html:
     code-fold: true
@@ -14,27 +16,29 @@ library(tidyr)
 library(janitor)
 library(simplermarkdown)
 
-if (system.file(package = "midfielddata") == "") {
-  install.packages("midfielddata",
-    repos = "https://MIDFIELDR.github.io/drat/",
-    type = "source"
-  )
-}
-library(midfielddata)
 ```
 
 # Data Import and Cleaning
 
-```{r full data import, message = FALSE, warning = FALSE, eval=FALSE}
+```{r data import, message = FALSE, warning = FALSE, eval = TRUE}
 # Midfield Data for full dataset
-degree <- read.csv("data/degree_2020_03_16_fix9a.csv")
-student <- read.csv("data/student_2020_03_16_fix9a.csv")
-course <- read.csv("data/course_2020_03_16_fix9a.csv")
-term <- read.csv("data/term_2020_03_16_fix9a.csv")
-```
 
-```{r partial data import, include = FALSE}
-# data(course, degree, term, package = "midfielddata")
+use_full_dataset <- TRUE
+if (use_full_dataset && !exists("degree")) {
+  degree <- read.csv("data/degree_2020_03_16_fix9a.csv")
+  student <- read.csv("data/student_2020_03_16_fix9a.csv")
+  course <- read.csv("data/course_2020_03_16_fix9a.csv")
+  term <- read.csv("data/term_2020_03_16_fix9a.csv")
+} else if (!use_full_dataset) {
+  if (system.file(package = "midfielddata") == "") {
+    install.packages("midfielddata",
+                     repos = "https://MIDFIELDR.github.io/drat/",
+                     type = "source"
+    )
+  }
+  library(midfielddata)
+  data(course, degree, term, package = "midfielddata")
+}
 ```
 
 # Computing CIP Codes
@@ -75,7 +79,8 @@ degree_cip %>%
   # Filter for degrees over 1
   filter(degrees_conferred > 1) %>%
   # Reorder axis for descending order
-  ggplot(aes(x = reorder(x = title, -degrees_conferred), y = degrees_conferred)) +
+  ggplot(aes(x = reorder(x = title, -degrees_conferred), 
+             y = degrees_conferred)) +
   geom_bar(stat = "identity", aes(fill = title)) +
   labs(
     title = "Number of Degrees Conferred per CIP Code",
