@@ -187,7 +187,8 @@
 \hypersetup{
   pdftitle={Detecting computing-enabled interdisciplinary domains using the MIDFIELD data set},
   pdfauthor={Tim Ransom; Randi Sims; Stephanie Damas},
-  pdfkeywords={IEEE, IEEEtran, journal, Quarto, Pandoc, template},
+  pdfkeywords={Undergraduate Education, Curriculum and Course
+Development},
   colorlinks=true,
   linkcolor={blue},
   filecolor={Maroon},
@@ -216,11 +217,9 @@
 MIDFIELD data set}
 
 \author{
-\thanks{The \texttt{quarto-ieee} template is freely available under the
-MIT license on github: \url{https://github.com/dfolio/quarto-ieee}.}
 Tim Ransom\orcidlink{0000-0003-0357-5427},~Randi
 Sims\orcidlink{0000-0003-0357-5427}
-and~Stephanie Damas\orcidlink{0000-0003-0357-5427}%
+and~Stephanie Damas\orcidlink{0000-0001-5397-7577}%
 \thanks{Tim Ransom is with Engineering and Science Education, Clemson
 University, Clemson, 29634 United States of America%
  e-mail: tsranso@clemson.edu}
@@ -237,8 +236,6 @@ Education, Clemson University, Clemson, 29634 United States of America%
 \begin{document}
 
 % The paper headers
-\markboth{Journal XXX, Month Year}{D. Folio: A Sample Article Using
-quarto-ieee}
 
 % use for special paper notices
 
@@ -247,18 +244,9 @@ quarto-ieee}
 
 % As a general rule, do not put math, special symbols or citations
 % in the abstract or keywords.
-\begin{abstract}
-This document describes the most common article elements and how to use
-the \texttt{quarto-ieee} class with Pandoc/Quarto-Markdown to produce
-files that are suitable for submission to IEEE journals.
-\texttt{quarto-ieee} can produce conference, journal, and technical note
-(correspondence) papers with a suitable choice of class options. It
-intends to generate PDF and HTML outputs that closely mimick what IEEE
-would generate.
-\end{abstract}
 % Note that keywords are not normally used for peerreview papers.
 \begin{IEEEkeywords}
-IEEE, IEEEtran, journal, Quarto, Pandoc, template
+Undergraduate Education, Curriculum and Course Development
 \end{IEEEkeywords}
 
 % For peer review papers, you can put extra information on the cover
@@ -271,22 +259,63 @@ IEEE, IEEEtran, journal, Quarto, Pandoc, template
 % creates the second title. It will be ignored for other modes.
 % \IEEEpeerreviewmaketitle
 
-\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[enhanced, sharp corners, frame hidden, borderline west={3pt}{0pt}{shadecolor}, boxrule=0pt, breakable, interior hidden]}{\end{tcolorbox}}\fi
+\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[sharp corners, interior hidden, breakable, boxrule=0pt, frame hidden, enhanced, borderline west={3pt}{0pt}{shadecolor}]}{\end{tcolorbox}}\fi
+
+\hypertarget{merged-draft}{%
+\section{Merged draft}\label{merged-draft}}
+
+The computing domain has historically engaged with other branches of
+study to create new interdisciplinary programs. These specialized
+programs offer both a targeted approach for solving complex issues as
+well as acting as a point of attraction for students to enroll is one
+university over another. The curriculum of these interdisciplinary
+programs often include courses from their respective ``parent'' fields.
+For example, bioinformatics curriculum can include courses from both
+computer science departments as well as biology departments.
+
+The Multiple-Institution Database for Investigating Engineering
+Longitudinal Development (MIDFIELD) project has collected complete
+course records of every student's path towards degree for eighteen
+Universities across the United States of America. This data allows us to
+construct sets of courses that students chose to complete to fulfill
+their institution's requirements for graduation. We interpret this set
+of courses as representing the knowledge, skills, and abilities (KSAs)
+of the students who graduate with a given degree, which we use as our
+theoretical framework.
+
+This work analyses the robust MIDFIELD data set in order to identify
+overlaps between interdisciplinary degree course requirements and their
+``parent'' degree course requirements. The set of courses that are
+shared between curricula can indicate to curriculum designers both the
+set of courses that other institutions have deemed sufficiently relevant
+to include, and also the courses that have been offered through other
+departments.
+
+This study helps lay groundwork for promoting interdisciplinary majors
+between computing and other STEM fields. Research has demonstrated how a
+diverse team of computing-enabled professionals contributes
+significantly to solving complex problems. Implementing
+interdisciplinary majors can make computer science programs more
+attractive to students with marginalized identities who seek to bridge
+the gap between their lived experiences and the fundamentals of computer
+science. As such, this study aims to identify fundamental computer
+science courses that other programs can use and extend to create
+interdisciplinary majors.
 
 \hypertarget{tims-draft}{%
 \section{Tim's Draft}\label{tims-draft}}
 
 A major contribution of the computing sciences historically has been to
-enable other branches of science the knowledege and skills to further
+enable other branches of science the knowledge and skills to further
 their own endeavors with the use of computation.
 
-This has led to the creation of many multidisciplinary fields such as
+This has led to the creation of several interdisciplinary fields such as
 bioinformatics, computational chemistry, and computational physics.
 These specialized fields offer both a targeted approach towards
 furthering our collective knowledge as well as acting as a point of
-attraction for steudents to enroll is one university over another.
+attraction for students to enroll is one university over another.
 
-The curriculum of these multidisciplinary programs often include courses
+The curriculum of these interdisciplinary programs often include courses
 from their respective ``parent'' fields. For example, bioinformatics
 curriculum can include courses from both computer science departments as
 well as biology departments. The number of courses that are specific to
@@ -295,7 +324,25 @@ offered by the ``parent'' field(s).
 
 The MIDFIELD project provides a robust and detailed data set of the
 courses that students have taken as they complete their degrees. This
-project uses the MIDFIELD data set to determine the courses likely
+project uses the MIDFIELD data set to determine the courses that
+students have taken on their paths to degree completion. The dataset has
+course information dating back to 19XX, and can therefore reveal
+interdisciplinary degree creation and growth over time.
+
+Curriculum analysis is suited for quantitatve methods of analysis due to
+the size and quantifiability of the courses that comprise a curriculum.
+
+This work presents a quantitative analysis of overlapping courses that
+students have taken as they completed computer science and related
+interdisciplinary undergraduate degrees. Detecting the course overlaps
+from a large dataset such as MIDFILED gives insights into the core
+courses that universities have required students to complete. The
+overlap between computer science and interdisciplinary courses can be
+used by curriculm designers to determine which courses would most
+quickly develop new interdisciplinary programs. For example, if a large
+portion of a desired but not yet implemented program is already offered
+by a university, then this study can identify which courses are highly
+critical to the creation of the new program.
 
 \hypertarget{randi-draft}{%
 \section{Randi Draft}\label{randi-draft}}

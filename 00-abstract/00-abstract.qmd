@@ -54,7 +54,7 @@ author:
         country: United States of America
         postal-code: 29634
       # - name: Unknown affiliation
-    orcid: 0000-0003-0357-5427
+    orcid: 0000-0001-5397-7577
     email: damas@clemson.edu
     url: 
     # membership: "Member, IEEE"
@@ -65,20 +65,20 @@ author:
       Tim Ransom is a PhD candidate in the Clemson University Enigineering 
       and Science Education department. He studies computer science education
       through qualitative and computational methodologies.
-abstract: |
-  This document describes the most common article elements and how to use the 
-  `quarto-ieee` class with Pandoc/Quarto-Markdown to produce files that are
-  suitable for submission to IEEE journals.  
-  `quarto-ieee` can produce conference, journal, and technical note (correspondence) 
-  papers with a suitable choice of class options. 
-  It intends to generate PDF and HTML outputs that closely mimick what IEEE would generate.
-keywords: [IEEE, IEEEtran, journal, Quarto, Pandoc, template]
+#abstract: |
+#  This document describes the most common article elements and how to use the 
+#  `quarto-ieee` class with Pandoc/Quarto-Markdown to produce files that are
+#  suitable for submission to IEEE journals.  
+#  `quarto-ieee` can produce conference, journal, and technical note (correspondence) 
+#  papers with a suitable choice of class options. 
+#  It intends to generate PDF and HTML outputs that closely mimick what IEEE would generate.
+keywords: [Undergraduate Education, Curriculum and Course Development]
 #funding: 
-funding: 
-  statement: "The `quarto-ieee` template is freely available under the MIT license on github: <https://github.com/dfolio/quarto-ieee>."
-pageheader:
-  left: Journal XXX, Month Year
-  right: 'D. Folio:  A Sample Article Using quarto-ieee'
+#funding: 
+  #statement: "The `quarto-ieee` template is freely available under the MIT license on github: <https://github.com/dfolio/quarto-ieee>."
+#pageheader:
+ # left: Journal XXX, Month Year
+  #right: 'D. Folio:  A Sample Article Using quarto-ieee'
 bibliography: bibliography.bib
 date: 2023-06-23
 pdf: https://github.com/dfolio/quarto-ieee/blob/main/template.pdf
@@ -91,15 +91,32 @@ citation:
   pdf-url: https://github.com/dfolio/quarto-ieee/template.pdf
 ---
 
+# Merged draft
+
+The computing domain has historically engaged with other branches of study to create new interdisciplinary programs. These specialized programs offer both a targeted approach for solving complex issues as well as acting as a point of attraction for students to enroll is one university over another. The curriculum of these interdisciplinary programs often include courses from their respective "parent" fields. For example, bioinformatics curriculum can include courses from both computer science departments as well as biology departments. 
+
+The Multiple-Institution Database for Investigating Engineering Longitudinal Development (MIDFIELD) project has collected complete course records of every student's path towards degree for eighteen Universities across the United States of America. This data allows us to construct sets of courses that students chose to complete to fulfill their institution's requirements for graduation. We interpret this set of courses as representing the knowledge, skills, and abilities (KSAs) of the students who graduate with a given degree, which we use as our theoretical framework.
+
+This work analyses the robust MIDFIELD data set in order to identify overlaps between interdisciplinary degree course requirements and their "parent" degree course requirements. The set of courses that are shared between curricula can indicate to curriculum designers both the set of courses that other institutions have deemed sufficiently relevant to include, and also the courses that have been offered through other departments.
+
+This study helps lay groundwork for promoting interdisciplinary majors between computing and other STEM fields. Research has demonstrated how a diverse team of computing-enabled professionals contributes significantly to solving complex problems. Implementing interdisciplinary majors can make computer science programs more attractive to students with marginalized identities who seek to bridge the gap between their lived experiences and the fundamentals of computer science. As such, this study aims to identify fundamental computer science courses that other programs can use and extend to create interdisciplinary majors. 
+
+
 # Tim's Draft
 
-A major contribution of the computing sciences historically has been to enable other branches of science the knowledege and skills to further their own endeavors with the use of computation.
+A major contribution of the computing sciences historically has been to enable other branches of science the knowledge and skills to further their own endeavors with the use of computation.
 
-This has led to the creation of many multidisciplinary fields such as bioinformatics, computational chemistry, and computational physics. These specialized fields offer both a targeted approach towards furthering our collective knowledge as well as acting as a point of attraction for steudents to enroll is one university over another. 
+This has led to the creation of several interdisciplinary fields such as bioinformatics, computational chemistry, and computational physics. These specialized fields offer both a targeted approach towards furthering our collective knowledge as well as acting as a point of attraction for students to enroll is one university over another. 
 
-The curriculum of these multidisciplinary programs often include courses from their respective "parent" fields. For example, bioinformatics curriculum can include courses from both computer science departments as well as biology departments. The number of courses that are specific to the "child" field need not be as large as the number of courses offered by the "parent" field(s). 
+The curriculum of these interdisciplinary programs often include courses from their respective "parent" fields. For example, bioinformatics curriculum can include courses from both computer science departments as well as biology departments. The number of courses that are specific to the "child" field need not be as large as the number of courses offered by the "parent" field(s). 
 
-The MIDFIELD project provides a robust and detailed data set of the courses that students have taken as they complete their degrees. This project uses the MIDFIELD data set to determine the courses likely 
+The MIDFIELD project provides a robust and detailed data set of the courses that students have taken as they complete their degrees. This project uses the MIDFIELD data set to determine the courses that students have taken on their paths to degree completion. The dataset has course information dating back to 19XX, and can therefore reveal interdisciplinary degree creation and growth over time.
+
+Curriculum analysis is suited for quantitatve methods of analysis due to the size and quantifiability of the courses that comprise a curriculum.
+
+This work presents a quantitative analysis of overlapping courses that students have taken as they completed computer science and related interdisciplinary undergraduate degrees. Detecting the course overlaps from a large dataset such as MIDFILED gives insights into the core courses that universities have required students to complete. The overlap between computer science and interdisciplinary courses can be used by curriculm designers to determine which courses would most quickly develop new interdisciplinary programs. For example, if a large portion of a desired but not yet implemented program is already offered by a university, then this study can identify which courses are highly critical to the creation of the new program.
+
+<!-- category accuracy -->
 
 # Randi Draft
 
