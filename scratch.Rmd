@@ -1,0 +1,108 @@
+---
+title: "Untitled"
+output: html_document
+date: "2024-05-13"
+runtime: shiny
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(ggplot2)
+library(data.table)
+library(DT)
+library(pheatmap)
+library(magrittr)
+library(stringr)
+
+dataset <- diamonds
+heatmap_data <- readRDS("/home/tsranso/Code/FIE_midfield_multidisciplinary_2024/01-data-analysis/heatmap_data.RData")
+cip_names <- readRDS("/home/tsranso/Code/FIE_midfield_multidisciplinary_2024/midfield_cips_and_names.rds")
+degree_names <- setNames(cip_names$degree, cip_names$cip6)
+heatmap_data <- heatmap_data[, degree_a := degree_names[cip_a]][, degree_b := degree_names[cip_b]]
+
+
+
+
+make_similarity_matrix <- function(heatmap_data) {
+  hd <- heatmap_data %>% 
+    .[, c('degree_a', 'degree_b', 'similarity')] %>% 
+    .[degree_a != "" & degree_b != ""] %>% 
+    .[, degree_a := str_wrap(str_replace(degree_a, "Bachelor of Science in", ""), width = 15, whitespace_only = T)] %>% 
+    .[, degree_b := str_wrap(str_replace(degree_b, "Bachelor of Science in", ""), width = 15, whitespace_only = T)] %>% 
+    .[similarity == 100 | similarity < 1, similarity := NA]
+  #hd <- hd[, similarity := similarity / 100]
+  # .[, degree_a := str_wrap(str_replace(degree_a, "Bachelor of Science in", "BSc"), width = 15, whitespace_only = T)] %>% 
+  # .[, degree_b := str_wrap(str_replace(degree_b, "Bachelor of Arts in", "BA"), width = 15, whitespace_only = T)] %>% 
+  # .[, degree_b := str_wrap(str_replace(degree_b, "Bachelor of Science in", "BSc"), width = 15, whitespace_only = T)]
+  #hd[similarity == 100] <- NA
+  #setorder(hd, cols = -"similarity")
+  similarity_matrix <- dcast(hd, degree_a ~ degree_b, value.var = 'similarity')
+  sm <- data.frame(similarity_matrix, row.names = 1)
+  
+  return(sm)
+}
+
+make_heatmap <- function(computing, title = "set title in param", file_name = NULL, w = 5, h = 5) {
+  
+  hm <- pheatmap(computing, cluster_cols = FALSE, cluster_rows = FALSE, cellwidth = 40, cellheight = 40,
+                 legend = FALSE, 
+                 display_numbers = round(computing, 0),
+                 fontsize_number = 15, fontsize = 10, 
+                 main = title)
+  return(hm)
+}
+
+engineering_cips <- c("141901", "141001", "143501", "140701", "140101", "140301", "140501", "140801", "140901", "140903")
+engineering <- make_similarity_matrix(heatmap_data[cip_a %in% engineering_cips & cip_b %in% engineering_cips])
+engineering_heatmap <- make_heatmap(engineering, "Course overlap between engineering programs", file_name = "engineering", w = 7, h = 8)
+
+```
+
+This R Markdown document is made interactive using Shiny. Unlike the more traditional workflow of creating static reports, you can now create documents that allow your readers to change the assumptions underlying your analysis and see the results immediately. 
+
+To learn more, see [Interactive Documents](http://rmarkdown.rstudio.com/authoring_shiny.html).
+
+## Inputs and Outputs
+
+You can embed Shiny inputs and outputs in your document. Outputs are automatically updated whenever inputs change.  This demonstrates how a standard R plot can be made interactive by wrapping it in the Shiny `renderPlot` function. The `selectInput` and `sliderInput` functions create the input widgets used to drive the plot.
+
+```{r eruptions, echo=FALSE}
+inputPanel(
+  selectInput("n_breaks", label = "Number of bins:",
+              choices = c(10, 20, 35, 50), selected = 20),
+  
+  sliderInput("bw_adjust", label = "Bandwidth adjustment:",
+              min = 0.2, max = 2, value = 1, step = 0.2)
+)
+
+renderPlot({
+  hist(faithful$eruptions, probability = TRUE, breaks = as.numeric(input$n_breaks),
+       xlab = "Duration (minutes)", main = "Geyser eruption duration")
+  
+  dens <- density(faithful$eruptions, adjust = input$bw_adjust)
+  lines(dens, col = "blue")
+})
+```
+
+## Embedded Application
+
+It's also possible to embed an entire Shiny application within an R Markdown document using the `shinyAppDir` function. This example embeds a Shiny application located in another directory:
+
+```{r tabsets, echo=FALSE}
+shinyAppDir(
+  system.file("examples/06_tabsets", package = "shiny"),
+  options = list(
+    width = "100%", height = 550
+  )
+)
+```
+
+Note the use of the `height` parameter to determine how much vertical space the embedded application should occupy.
+
+You can also use the `shinyApp` function to define an application inline rather then in an external directory.
+
+In all of R code chunks above the `echo = FALSE` attribute is used. This is to prevent the R code within the chunk from rendering in the document alongside the Shiny components.
+
+
+

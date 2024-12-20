@@ -1,0 +1,102 @@
+---
+title: "Course Correlation Explorer"
+author: "Tim Ransom"
+format: html
+server: shiny
+---
+
+```{r, echo=FALSE, warning=FALSE, error=FALSE, message=FALSE}
+#| context: setup
+library(ggplot2)
+library(data.table)
+library(DT)
+library(pheatmap)
+library(magrittr)
+
+dataset <- diamonds
+heatmap_data <- readRDS("/home/tsranso/Code/FIE_midfield_multidisciplinary_2024/01-data-analysis/heatmap_data.RData")
+cip_names <- readRDS("/home/tsranso/Code/FIE_midfield_multidisciplinary_2024/midfield_cips_and_names.rds")
+#cip_names <- cip_names <- setNames(cip_names$degree, cip_names$cip6)
+heatmap_data <- heatmap_data[, degree_a := degree_names[cip_a]][, degree_b := degree_names[cip_b]]
+
+
+
+
+make_similarity_matrix <- function(heatmap_data) {
+  hd <- heatmap_data %>% 
+    .[, c('degree_a', 'degree_b', 'similarity')] %>% 
+    .[degree_a != "" & degree_b != ""] %>% 
+    .[, degree_a := str_wrap(str_replace(degree_a, "Bachelor of Science in", ""), width = 15, whitespace_only = T)] %>% 
+    .[, degree_b := str_wrap(str_replace(degree_b, "Bachelor of Science in", ""), width = 15, whitespace_only = T)] %>% 
+    .[similarity == 100 | similarity < 1, similarity := NA]
+  #hd <- hd[, similarity := similarity / 100]
+  # .[, degree_a := str_wrap(str_replace(degree_a, "Bachelor of Science in", "BSc"), width = 15, whitespace_only = T)] %>% 
+  # .[, degree_b := str_wrap(str_replace(degree_b, "Bachelor of Arts in", "BA"), width = 15, whitespace_only = T)] %>% 
+  # .[, degree_b := str_wrap(str_replace(degree_b, "Bachelor of Science in", "BSc"), width = 15, whitespace_only = T)]
+  #hd[similarity == 100] <- NA
+  #setorder(hd, cols = -"similarity")
+  similarity_matrix <- dcast(hd, degree_a ~ degree_b, value.var = 'similarity')
+  sm <- data.frame(similarity_matrix, row.names = 1)
+  
+  return(sm)
+}
+
+make_heatmap <- function(computing, title = "set title in param", file_name = NULL, w = 5, h = 5) {
+  
+  hm <- pheatmap(computing, cluster_cols = FALSE, cluster_rows = FALSE, cellwidth = 40, cellheight = 40,
+                 legend = FALSE, 
+                 display_numbers = round(computing, 0),
+                 fontsize_number = 15, fontsize = 10, 
+                 main = title)
+  return(hm)
+}
+
+engineering_cips <- c("141901", "141001", "143501", "140701", "140101", "140301", "140501", "140801", "140901", "140903")
+engineering <- make_similarity_matrix(heatmap_data[cip_a %in% engineering_cips & cip_b %in% engineering_cips])
+engineering_heatmap <- make_heatmap(engineering, "Course overlap between engineering programs", file_name = "engineering", w = 7, h = 8)
+
+```
+
+
+```{r}
+fluidPage(
+  
+  title = 'Select Table Rows',
+  
+  h1('A Client-side Table'),
+  
+  fluidRow(
+    column(6, plotOutput('x2')),    
+    column(6, DT::dataTableOutput('x1'))
+  )
+)
+```
+
+
+```{r}
+#| context: server
+
+dataset <- reactive({
+  diamonds[sample(nrow(diamonds), input$sampleSize),]
+})
+
+dataset2 <- reactive({
+  heatmap_data[, cip_a %in% input$x1_rows_selected]
+})
+
+output$x1 = DT::renderDT(small_data, server = FALSE)
+
+# highlight selected rows in the scatterplot
+output$x2 = renderPlot({
+  s = input$x1_rows_selected
+  par(mar = c(4, 4, 1, .1))
+  plot(cars)
+  if (length(s)) points(cars[s, , drop = FALSE], pch = 19, cex = 2)
+})
+
+
+
+output$data <- renderTable({
+  dataset()
+})
+```

@@ -11,12 +11,17 @@ format:
 ---
 
 ```{r libraries, message = FALSE, include = FALSE}
-library(dplyr)
+#library(dplyr)
 library(tidyverse)
-library(tidyr)
-library(janitor)
+library(magrittr)
+#library(tidyr)
+#library(janitor)
+library(ggplot2)
 library(simplermarkdown)
-library(midfielddata)
+#library(midfielddata)
+library(profvis)
+library(pheatmap)
+library(data.table)
 ```
 
 # Data Import and Cleaning
@@ -24,12 +29,16 @@ library(midfielddata)
 ```{r data import, message = FALSE, warning = FALSE, eval = TRUE}
 # Midfield Data for full dataset
 
-use_full_dataset <- FALSE
+use_full_dataset <- TRUE
 if (use_full_dataset && !exists("degree")) {
-  degree <- read.csv("data/degree_2020_03_16_fix9a.csv")
-  student <- read.csv("data/student_2020_03_16_fix9a.csv")
-  course <- read.csv("data/course_2020_03_16_fix9a.csv")
-  term <- read.csv("data/term_2020_03_16_fix9a.csv")
+  degree <- data.table::fread("data/degree_2020_03_16_fix9a.csv")
+  #term <- data.table::fread("data/term_2020_03_16_fix9a.csv")
+  #student <- data.table::fread("data/student_2020_03_16_fix9a.csv")
+  course <- data.table::fread("data/course_2020_03_16_fix9a.csv")
+  # degree <- read.csv("data/degree_2020_03_16_fix9a.csv")
+  # student <- read.csv("data/student_2020_03_16_fix9a.csv")
+  #course <- read.csv("data/course_2020_03_16_fix9a.csv")
+  # term <- read.csv("data/term_2020_03_16_fix9a.csv")
 } else if (!use_full_dataset) {
   if (system.file(package = "midfielddata") == "") {
     install.packages("midfielddata",
@@ -40,18 +49,23 @@ if (use_full_dataset && !exists("degree")) {
   library(midfielddata)
   data(course, degree, term, package = "midfielddata")
 }
+
+# cip to degree name data
+degree_names <- unique(degree[, c("cip6", "degree")])
+degree_names <- setNames(degree_names$degree, degree_names$cip6)
+
+# all_midfield_cips <- degree %>% select(cip6) %>% distinct(cip6)
+all_midfield_cips <- unique(degree, by = c("cip6"))[,.(cip6)]
+cips_of_interest <- all_midfield_cips[, "cip6" := as.character(cip6)] |> unlist()
+degree_translation <- unique(degree[, c("cip6", "degree")])[, "cip6" := as.character(cip6)]
+# these are the four cips that have the word computer in their degree
 ```
 
 # Gather Full CIP Codes
 
 ```{r cips}
 ## Make a new cip code list with all of the midfield cip codes (using distinct)
-all_midfield_cips <- degree %>%
-  distinct(degree, cip6, .keep_all = TRUE) %>%
-  rename(title = degree)
-
-cips_of_interest <- all_midfield_cips$cip6
-# these are the four cips that have the word computer in their degree
+#cips_of_interest <- all_midfield_cips$cip6
 cips_of_interest <- c("110101",
                       "110701",
                       "140901",
@@ -59,7 +73,7 @@ cips_of_interest <- c("110101",
 
 computing_dhs_cips <- c(
   "110101", "110102", "110103", "110104", "110199", "110201", "110202", "110203",
-  "110299", "110301", "110401", "110501", "110701", "110801", "110802", "110803",
+  "110299", "110401", "110501", "110701", "110801", "110802", "110803",
   "110804", "110899", "110901", "111001", "111002", "111003", "111004", "111005",
   "111006", "111099", "140900", "140901", "140902", "140903", "140999", "151201",
   "151202", "151203", "151204", "151299", "151301"
@@ -685,56 +699,38 @@ cips_of_interest <- computing_dhs_cips
 
 # Compute heatmap data
 
-## helper functions
+## heatmap helper functions
 
 ```{r combine datasets for courses}
-# get list of student ids that completed degrees of interest
-students_of_interest <- filter(degree, cip6 %in% cips_of_interest) %>%
-  select(mcid, cip6) %>%
-  unique()
-
-courses_of_interest <- course %>%
-  nest_by(mcid) %>%
-  filter(mcid %in% students_of_interest$mcid)
+students_of_interest <- unique(degree[,.(mcid, cip6)][cip6 %in% cips_of_interest])
+courses_of_interest <- course[mcid %in% students_of_interest$mcid]
 
 # 140901 is computer engineering
 # 110101 is computer science
+# compute the number of shared courses between degree cips based on the stduents who graduated with the degree's class record
 percent_similarity_between_cips <- function(cip_a = "140901", cip_b = "110101") {
   get_courses_taken_while_progressing_towards_degree <- function(specific_cip = "110101") {
     # MCID3111145907 MCID3111146481
     get_courses_a_student_took <- function(student_mcid = "MCID3111146675") {
-      courses_student_took <- course %>%
-        filter(mcid == student_mcid) %>%
-        mutate(course = paste(abbrev, number)) %>%
-        select(course)
-      return(courses_student_took)
+      #student_mcid = "MCID3111146675"
+      return(course[mcid == student_mcid][, c("course") := { paste(abbrev, number) }][,.(course)])
     }
     get_courses_a_student_took_vec <- Vectorize(get_courses_a_student_took)
-
+    
     get_students_conferred_a_degree <- function(degree_cip = "110101") {
-      students_conferred_degree <- filter(degree, cip6 == degree_cip) %>%
-        select(mcid) %>%
-        unique()
-
-      return(students_conferred_degree)
+      # degree_cip <- "110101"
+      return(unique(degree[cip6 == degree_cip,][,.(mcid)]))
     }
-
+    
+    #specific_cip <- "110101"
     students_who_earned_degree <- get_students_conferred_a_degree(specific_cip)
-
-    courses_students_took <- students_who_earned_degree %>%
-      mutate(courses_taken = get_courses_a_student_took_vec(mcid))
-
-    # this also computes the frequency a course was taken, high quality jank
-    courses <- courses_students_took$courses_taken %>%
-      reduce(dplyr::union_all) %>%
-      table() %>%
-      enframe(name = "course", value = "count") %>%
-      arrange(desc(count))
-
-    # just return the list of courses
-    return(courses$course)
+    courses_students_took <- students_who_earned_degree[, "courses" := get_courses_a_student_took_vec(mcid)]
+    courses <- Reduce(union, courses_students_took$courses)
+    return(courses)
   }
-
+  
+  #cip_a = "140901"
+  #cip_b = "110101"
   # potential_cache_filename_a <- paste(getwd(), "/01-data-analysis/full_cip_processing_cache/", cip_a, "-courses.RData", sep = "")
   # potential_cache_filename_b <- paste(getwd(), "/01-data-analysis/full_cip_processing_cache/", cip_b, "-courses.RData", sep = "")
   # this cacheing probably should have been in the get_courses_taken_while_progressing_towards_degree function to reduce duplication
@@ -758,13 +754,10 @@ percent_similarity_between_cips <- function(cip_a = "140901", cip_b = "110101") 
     saveRDS(courses_cip_b, file = potential_cache_filename_b)
   }
 
-
   shared_courses <- length(intersect(courses_cip_a, courses_cip_b))
   all_courses_in_either <- length(union(courses_cip_a, courses_cip_b))
-
-  percent_similarity <- round(100 * (shared_courses / all_courses_in_either), 0)
-
-  return(percent_similarity)
+  # with test cips should be 32 on full data set and 21 on sample
+  return(round(100 * (shared_courses / all_courses_in_either), 0))
 }
 # percent_similarity_between_cips()
 percent_similarity_between_cips_vec <- Vectorize(percent_similarity_between_cips)
@@ -772,55 +765,118 @@ percent_similarity_between_cips_vec <- Vectorize(percent_similarity_between_cips
 
 ## evaluating computation
 
-```{r compute curriculum similarities, eval=FALSE}
+```{r}
+heatmap_data <- CJ(cip_a = unlist(cips_of_interest), cip_b = unlist(cips_of_interest), unique = TRUE)
 
+# this ended up being unneeded, keep it serial
 use_parallel_computation <- FALSE
-# sequential no optimization ???
-# sequential nothing cached 56.649 sec runtime
-# sequential fully cached 0.286 sec runtime
-# parallel with no optimization 124 sec runtime
-# parallel nothing cached 57.6 sec runtime
-# parallel fully cached 0.929 sec runtime
+
 if (use_parallel_computation) {
-  # brief sojourn into parallel processing... got impatient while waiting for computation
-  library(multidplyr)
-  library(parallel)
-  library(tictoc)
-
-  cluster <- new_cluster(detectCores() - 1)
-  cluster_library(cluster, "tidyverse")
-  cluster_library(cluster, "magrittr")
-  cluster_copy(cluster, "percent_similarity_between_cips_vec")
-  cluster_copy(cluster, "get_courses_taken_while_progressing_towards_degree")
-  cluster_copy(cluster, "get_students_conferred_a_degree")
-  cluster_copy(cluster, "degree")
-  cluster_copy(cluster, "get_courses_a_student_took_vec")
-  cluster_copy(cluster, "course")
-
-  tic()
-  # note the partition and collect functions - that's the parallelism BABY
-  heatmap_data <- crossing(cip_a = cips_of_interest, cip_b = cips_of_interest) %>% partition(cluster) %>%
-    mutate(similarity = percent_similarity_between_cips_vec(cip_a, cip_b)) %>% collect()
-  toc()
-
+  # library(doParallel)
+  # library(foreach)
+  # 
+  # cl <- makeCluster(detectCores() - 1)
+  # registerDoParallel(cl)
+  # 
+  # results <- foreach(i = unique(heatmap_data$cip_a), .combine = rbind) %dopar% {
+  #   #subset_data <- heatmap_data[cip_a == i]
+  #   heatmap_data[cip_a == i, "similarity" := percent_similarity_between_cips_vec(cip_a, cip_b)]
+  #   #return(processed_subset)
+  # }
+  # 
+  # heatmap_data <- as.data.table(results)
+  # stopCluster(cl)
 } else {
-
-  tic()
-  heatmap_data <- crossing(cip_a = cips_of_interest, cip_b = cips_of_interest) %>%
-    mutate(similarity = percent_similarity_between_cips_vec(cip_a, cip_b))
-  toc()
+  heatmap_data[, "similarity" := percent_similarity_between_cips_vec(cip_a, cip_b)]
 }
 
-saveRDS(heatmap_data, "/home/tsranso/Code/FIE_midfield_multidisciplinary_2024/heatmap_data_all_midfield_sample_cips.RData")
-#library(ggiraph)
+saveRDS(heatmap_data, "heatmap_data.RData")
+
 ```
 
 # Heatmap data
 
+
 ```{r}
-heatmap_data <- readRDS("/home/tsranso/Code/FIE_midfield_multidisciplinary_2024/heatmap_data_all_midfield_sample_cips.RData")
+# heatmap_data <- readRDS("/home/tsranso/Code/FIE_midfield_multidisciplinary_2024/01-data-analysis/data/heatmap_data_all_midfield_sample_cips.RData")
+library(data.table)
+library(tidyverse)
+library(magrittr)
+library(pheatmap)
+
+make_similarity_matrix <- function(heatmap_data) {
+  hd <- heatmap_data %>% 
+    .[, c('degree_a', 'degree_b', 'similarity')] %>% 
+    .[degree_a != "" & degree_b != ""] %>% 
+    .[, degree_a := str_wrap(str_replace(degree_a, "Bachelor of Science in", ""), width = 15, whitespace_only = T)] %>% 
+    .[, degree_b := str_wrap(str_replace(degree_b, "Bachelor of Science in", ""), width = 15, whitespace_only = T)] %>% 
+    .[similarity == 100 | similarity < 1, similarity := NA]
+  #hd <- hd[, similarity := similarity / 100]
+  # .[, degree_a := str_wrap(str_replace(degree_a, "Bachelor of Science in", "BSc"), width = 15, whitespace_only = T)] %>% 
+  # .[, degree_b := str_wrap(str_replace(degree_b, "Bachelor of Arts in", "BA"), width = 15, whitespace_only = T)] %>% 
+  # .[, degree_b := str_wrap(str_replace(degree_b, "Bachelor of Science in", "BSc"), width = 15, whitespace_only = T)]
+  #hd[similarity == 100] <- NA
+  #setorder(hd, cols = -"similarity")
+  similarity_matrix <- dcast(hd, degree_a ~ degree_b, value.var = 'similarity')
+  sm <- data.frame(similarity_matrix, row.names = 1)
+  
+  return(sm)
+}
+
+make_heatmap <- function(computing, title = "set title in param", file_name = NULL, w = 5, h = 5) {
+  
+  hm <- pheatmap(computing, cluster_cols = FALSE, cluster_rows = FALSE, cellwidth = 40, cellheight = 40,
+         legend = FALSE, 
+         display_numbers = round(computing, 0),
+         fontsize_number = 15, fontsize = 10, 
+         main = title)
+
+  if (!is.null(file_name)) {
+    ggsave(filename = paste0("/home/tsranso/", file_name, ".svg"), plot = hm, width = w, height = h)
+  }
+  
+  return(hm)
+}
+
+heatmap_data <- readRDS("/home/tsranso/Code/FIE_midfield_multidisciplinary_2024/01-data-analysis/heatmap_data.RData")
+heatmap_data <- heatmap_data[, degree_a := degree_names[cip_a]][, degree_b := degree_names[cip_b]]
+
+stem <- make_similarity_matrix(heatmap_data[cip_a %in% names(stem_cip_names) & cip_b %in% names(stem_cip_names)])
+applied_bio <- make_similarity_matrix(heatmap_data[cip_a %in% applied_biology_dhs_cips & cip_b %in% applied_biology_dhs_cips])
+core_bio <- make_similarity_matrix(heatmap_data[cip_a %in% core_biology_dhs_cips & cip_b %in% core_biology_dhs_cips])
+geo <- make_similarity_matrix(heatmap_data[cip_a %in% geo_dhs_cips & cip_b %in% geo_dhs_cips])
+
+applied_bio <- make_similarity_matrix(heatmap_data[cip_a %in% names(applied_biology_dhs_cips) & cip_b %in% names(applied_biology_dhs_cips)])
+core_bio <- make_similarity_matrix(heatmap_data[cip_a %in% names(core_biology_dhs_cips) & cip_b %in% names(core_biology_dhs_cips)])
+geo <- make_similarity_matrix(heatmap_data[cip_a %in% names(geo_dhs_cips) & cip_b %in% names(geo_dhs_cips)])
+
+select_few_cips <- c("110101", "110701", "270101", "400801", "400501", "400601", "143501", 
+                     "141901", "141001", "140701")
+select_few <- make_similarity_matrix(heatmap_data[cip_a %in% select_few_cips & cip_b %in% select_few_cips])
+make_heatmap(select_few, title = "Course overlap between general STEM programs", file_name = "gen_stem", w = 7, h = 9)
+
+computing <- make_similarity_matrix(heatmap_data[cip_a %in% computing_dhs_cips & cip_b %in% computing_dhs_cips])
+make_heatmap(computing, title = "Course overlap between computing programs", file_name = "computing", w = 7, h = 8)
+
+engineering_cips <- c("141901", "141001", "143501", "140701", "140101", "140301", "140501", "140801", "140901", "140903")
+engineering <- make_similarity_matrix(heatmap_data[cip_a %in% engineering_cips & cip_b %in% engineering_cips])
+make_heatmap(engineering, "Course overlap between engineering programs", file_name = "engineering", w = 7, h = 8)
+
+science_cips <- c("110701", "400801", "400501", "400601", "100000", "400201", "260101")
+science <- make_similarity_matrix(heatmap_data[cip_a %in% science_cips & cip_b %in% science_cips])
+make_heatmap(science, title = "Course overlap between science programs", file_name = "science", w = 6, h = 6)
+
+unique_degrees <- unique(c(heatmap_data$degree_a, heatmap_data$degree_b))
+similarity_matrix <- matrix(NA, nrow = length(unique_degrees), ncol = length(unique_degrees),
+                            dimnames = list(unique_degrees, unique_degrees))
+# Fill the matrix
+for (i in 1:nrow(heatmap_data)) {
+  similarity_matrix[heatmap_data$degree_a[i], heatmap_data$degree_b[i]] <- heatmap_data$similarity[i]
+  similarity_matrix[heatmap_data$degree_b[i], heatmap_data$degree_a[i]] <- heatmap_data$similarity[i]
+}
+
 library(DT)
-DT::datatable(heatmap_data %>% filter(similarity < 100 & similarity > 0))
+DT::datatable(heatmap_data)
 ```
 
 
@@ -832,6 +888,7 @@ This is a sensibility check to see that there are in fact pairs of cip codes whi
 
 ```{r}
 library(esquisse)
+library(tidyverse)
 
 heatmap_data %>%
  filter(similarity >= 1L & similarity <= 97L) %>%
@@ -857,7 +914,9 @@ Zeros have been removed
 ```{r}
 heatmap_data %>%
   filter((cip_a %in% names(stem_cip_names) & cip_b %in% names(stem_cip_names)) & similarity > 0) %>%
-  ggplot(aes(x = cip_a, cip_b)) +  geom_tile(aes(fill = similarity))
+  ggplot(aes(x = cip_a, cip_b)) +  
+  geom_tile(aes(fill = similarity)) +
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1))
 ```
 
 
@@ -877,8 +936,16 @@ heatmap_data %>%
 
 ```{r heatmap of overlap}
 heatmap_data %>%
-  filter(cip_a %in% computing_dhs_cips & cip_b %in% computing_dhs_cips & similarity > 0) %>%
-  ggplot(aes(x = cip_a, cip_b)) +  geom_tile(aes(fill = similarity))
+  filter(cip_a %in% computing_dhs_cips & cip_b %in% computing_dhs_cips & similarity > 0 & similarity < 100) %>%
+  ggplot(aes(x = str_wrap(str_degree_a, width = 10), str_wrap(degree_b, width = 10), fill = similarity)) +  
+    geom_tile() +
+    geom_text(aes(label = similarity), color = "white", size = 4) +
+    scale_fill_gradient2(low = "#075AFF",
+                       mid = "#F56600",
+                       high = "#522D80") +
+    theme(axis.text.x = element_text(angle = 45))
+  DT::datatable(heatmap_data %>%
+  filter(cip_a %in% computing_dhs_cips & cip_b %in% computing_dhs_cips & similarity > 0 & similarity < 100))
 ```
 
 ## Geoscience
